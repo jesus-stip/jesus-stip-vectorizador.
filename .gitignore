@@ -1,0 +1,7 @@
+node_modules/
+dist/
+# reference images and test samples: never committed
+replica/screens/*
+!replica/screens/.gitkeep
+samples/
+.DS_Store

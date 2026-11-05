@@ -1,0 +1,23 @@
+feature,area,priority,original,clone,notes
+Upload bitmap by click or drag and drop (JPG PNG BMP GIF),upload,must,yes,no,online edition inputs per support/file_formats
+Automatic detection of image type and settings,vectorize,must,yes,no,original auto-classifies photo / artwork / logo / scan
+Automatic vectorization right after upload,vectorize,must,yes,no,
+Side-by-side or flip view: bitmap vs vector result,review,must,yes,no,original also shows the segmentation layer
+Zoom and pan on the result,review,must,yes,no,inferred: needed to inspect edges
+Hand-pick settings: image type,settings,must,yes,no,photo / artwork with blended edges / artwork sharp edges / scan (inferred names)
+Hand-pick settings: detail level low medium high,settings,must,yes,no,medium recommended default
+Hand-pick settings: unlimited colors vs custom palette (2-12 colors),settings,must,yes,no,proposed palettes offered
+Re-vectorize after changing settings,settings,must,yes,no,
+Download SVG,export,must,yes,no,
+Download EPS,export,should,yes,no,
+Download PDF,export,must,yes,no,
+Free vectorize and preview; download gated by payment,billing,could,yes,no,for internal use this gate is likely not needed
+Account sign up and sign in,account,should,yes,no,useful for history; optional for single-user internal use
+History of past images,account,should,yes,no,inferred from per-image URLs (/images/<id>/edit)
+Delete image and results,account,should,yes,no,privacy for client files
+Edit palette colors (add remove pick from image),settings,should,yes,no,
+Segmentation editor (pixel brush merge regions Zap),editor,could,yes,skip,out of scope by user decision: core loop only
+Subscription billing (monthly),billing,could,yes,skip,internal use: no paying customers
+Desktop edition (offline app TIFF in AI DXF out),platform,could,yes,skip,web only by user decision
+DXF output for cutting machines,export,could,yes,no,desktop-only in original; cheap win if the business does laser/vinyl
+Batch processing of several images,vectorize,could,no,no,not seen in online edition; possible improvement
