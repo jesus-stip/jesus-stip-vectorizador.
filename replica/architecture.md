@@ -15,7 +15,7 @@ host to kill, and client images never leave the computer.
 | --- | --- | --- |
 | web | Vite + TypeScript, no framework, built to static HTML/JS/CSS | 7 screens and one main view; a framework adds weight and nothing else. Output uploads straight to `public_html/<subdomain>` |
 | styling | plain CSS with custom-property tokens from replica-design | no build-time CSS tooling to maintain |
-| engine | **adapter with two candidates, picked by a spike** (see below) | output quality is the product, so it gets measured, not assumed |
+| engine | **VTracer 0.6.5 (MIT OR Apache-2.0) compiled to WASM, after a preprocessing step** (upscale, denoise, palette quantization). Chosen by the spike, see `engine-spike.md` | best curves and colors on the user's real designs; 150 KB WASM |
 | PDF export | jsPDF 4.x + svg2pdf.js 2.x (both MIT) | vector PDF from our SVG, in the browser |
 | EPS export | own small writer: SVG path data (M L C Z, fill colors) -> PostScript | our output only ever uses filled paths, so this is ~150 lines; no good maintained library exists |
 | storage | IndexedDB in the browser (history of images and results) | no database on the server; works per device |
@@ -26,11 +26,11 @@ host to kill, and client images never leave the computer.
 | HTTPS | cPanel AutoSSL (Let's Encrypt) on the subdomain | needed for some browser APIs and for Basic auth not to leak |
 | hosting | the user's shared cPanel, subdomain such as `vector.yourdomain.com` | what they already have |
 
-### Engine candidates (spike in /replica-build, step 1)
+### Engine candidates (spike done 2026-11-05: VTracer won, see engine-spike.md)
 
 | candidate | license | how it ships | notes |
 | --- | --- | --- | --- |
-| A. VTracer (upstream `visioncortex/vtracer`, Rust) compiled to WASM ourselves with `wasm-pack` | check the LICENSE file in the upstream repo before use (believed MIT) | `.wasm` + JS glue, static | color tracing with hierarchical clustering, smooth splines; strongest quality candidate. Do **not** use the third-party npm `vtracer-wasm@0.1.0`: no license listed |
+| A. VTracer (upstream `visioncortex/vtracer`, Rust) compiled to WASM ourselves with `wasm-pack` | MIT OR Apache-2.0 (verified on crates.io, publisher visioncortex) | `.wasm` + JS glue, static | color tracing with hierarchical clustering, smooth splines; strongest quality candidate. Do **not** use the third-party npm `vtracer-wasm@0.1.0`: no license listed |
 | B. imagetracerjs 1.2.6 | Unlicense (public domain) | one JS file | simpler, pure JS, palette-based; baseline and fallback |
 
 Pick by tracing 6 to 10 of the user's own real images (logos, a photo, a scan) with both and comparing
