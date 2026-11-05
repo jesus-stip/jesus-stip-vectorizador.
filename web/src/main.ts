@@ -91,15 +91,46 @@ function onWorker(m: WorkerMessage) {
   vecImg.src = objectUrl(new Blob([m.svg], { type: 'image/svg+xml' }));
   $('s03-title').textContent = current!.name;
   const n = new Intl.NumberFormat('es');
-  $('s03-stats').textContent =
-    `${m.width} × ${m.height} px · ${m.colors} colores · ${n.format(m.paths)} formas · ${(m.ms / 1000).toFixed(1)} s` +
-    (m.downscaled ? ' · se trabajó a tamaño reducido' : '');
+  const stats = $('s03-stats');
+  stats.replaceChildren(...[
+    [`${m.width} × ${m.height}`, 'px'],
+    [String(m.colors), 'colores'],
+    [n.format(m.paths), 'formas'],
+    [(m.ms / 1000).toFixed(1), 's'],
+  ].map(([v, unit]) => {
+    const li = document.createElement('li');
+    const b = document.createElement('b');
+    b.textContent = v;
+    li.append(b, ` ${unit}`);
+    return li;
+  }));
+  const note = $('s03-note');
+  note.hidden = !m.downscaled;
+  note.textContent = 'La imagen es muy grande: se trazó a un tamaño reducido para que no se trabe el navegador.';
   selectTab('vec');
   show(s03);
   $<HTMLButtonElement>('s05-svg').focus();
 }
 
-function download(blob: Blob, name: string) {
+// On claude.ai the page runs in a sandbox that blocks plain downloads: use the viewer's
+// `downloads` capability there, and a normal link everywhere else (the cPanel site).
+type Saver = { save(r: { filename: string; data: Blob }): Promise<unknown> } | null;
+const claudeHost = (window as unknown as { claude?: { use(name: string): Promise<unknown> } }).claude;
+const saverReady: Promise<Saver> = claudeHost?.use
+  ? claudeHost.use('downloads').then((d) => d as Saver, () => null)
+  : Promise.resolve(null);
+
+async function download(blob: Blob, name: string) {
+  const saver = await saverReady;
+  if (saver) {
+    try { await saver.save({ filename: name, data: blob }); }
+    catch (e) {
+      const code = (e as { code?: string }).code;
+      if (code !== 'declined') showError(`No se pudo guardar el archivo (${code ?? 'error'}).`);
+    }
+    return;
+  }
+  if (claudeHost) return showError('Este visor no permite descargar archivos.');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = name;
@@ -142,6 +173,15 @@ $('s05-svg').addEventListener('click', () => {
   if (current?.svg) download(new Blob([current.svg], { type: 'image/svg+xml' }), `${current.name}.svg`);
 });
 $('s03-new').addEventListener('click', () => { show(s01); fileInput.value = ''; fileInput.focus(); });
+$('sample').addEventListener('click', async () => {
+  try {
+    const res = await fetch('./ejemplo.jpg');
+    if (!res.ok) throw new Error(String(res.status));
+    start(new File([await res.blob()], 'logo-ejemplo.jpg', { type: 'image/jpeg' }));
+  } catch {
+    showError('No se pudo cargar la imagen de ejemplo. Sube una tuya.');
+  }
+});
 $('tab-vec').addEventListener('click', () => selectTab('vec'));
 $('tab-orig').addEventListener('click', () => selectTab('orig'));
 

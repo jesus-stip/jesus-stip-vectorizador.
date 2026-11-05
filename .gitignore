@@ -8,3 +8,4 @@ samples/
 vectorizador-dist.zip
 replica/clone-screens/*
 !replica/clone-screens/.gitkeep
+artifact/
