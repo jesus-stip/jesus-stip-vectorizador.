@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Vectorizador</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 14 8 2l6 12z' fill='%232f5d50'/%3E%3C/svg%3E">
+</head>
+<body>
+  <header class="header"><p class="header__name">Vectorizador</p></header>
+  <main>
+    <!-- S01 upload -->
+    <section id="s01" aria-labelledby="s01-title">
+      <label class="drop" id="drop">
+        <h1 class="drop__title" id="s01-title">Suelta aquí tu imagen</h1>
+        <p class="drop__hint">o</p>
+        <span class="btn btn--primary" aria-hidden="true">Buscar en tu equipo</span>
+        <input class="visually-hidden" id="file" type="file" accept="image/png,image/jpeg,image/bmp,image/gif">
+        <p class="drop__formats">PNG, JPG, BMP o GIF, hasta 25 MB. La imagen no sale de tu computadora.</p>
+      </label>
+      <p class="alert" id="s01-error" role="alert" hidden></p>
+    </section>
+
+    <!-- S02 processing -->
+    <section id="s02" class="working" aria-live="polite" hidden>
+      <img class="working__thumb" id="s02-thumb" alt="">
+      <p class="working__stage" id="s02-stage">Leyendo la imagen…</p>
+      <div class="bar" aria-hidden="true"><div class="bar__fill"></div></div>
+      <button class="btn btn--secondary" id="s02-cancel" type="button">Cancelar</button>
+    </section>
+
+    <!-- S03 result + S05 download -->
+    <section id="s03" hidden aria-labelledby="s03-title">
+      <div class="result__top">
+        <div>
+          <h1 class="result__title" id="s03-title"></h1>
+          <p class="result__stats" id="s03-stats"></p>
+        </div>
+        <div class="result__actions">
+          <button class="btn btn--primary" id="s05-svg" type="button">Descargar SVG</button>
+          <button class="btn btn--secondary" id="s03-new" type="button">Otra imagen</button>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Vista">
+        <button class="tab" role="tab" id="tab-vec" aria-selected="true" aria-controls="pane-vec" type="button">Vector</button>
+        <button class="tab" role="tab" id="tab-orig" aria-selected="false" aria-controls="pane-orig" type="button">Original</button>
+      </div>
+      <div class="panes">
+        <figure class="pane" id="pane-orig" role="tabpanel" aria-labelledby="tab-orig" hidden-on-mobile>
+          <figcaption class="pane__label">Original (mapa de bits)</figcaption>
+          <div class="pane__view"><img id="s03-orig" alt="Imagen original"></div>
+        </figure>
+        <figure class="pane" id="pane-vec" role="tabpanel" aria-labelledby="tab-vec">
+          <figcaption class="pane__label">Vector (SVG)</figcaption>
+          <div class="pane__view"><img id="s03-vec" alt="Resultado vectorizado"></div>
+        </figure>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

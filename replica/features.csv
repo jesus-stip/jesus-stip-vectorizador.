@@ -1,14 +1,14 @@
 feature,area,priority,original,clone,notes
-Upload bitmap by click or drag and drop (JPG PNG BMP GIF),upload,must,yes,no,online edition inputs per support/file_formats
-Automatic detection of image type and settings,vectorize,must,yes,no,original auto-classifies photo / artwork / logo / scan
-Automatic vectorization right after upload,vectorize,must,yes,no,
-Side-by-side or flip view: bitmap vs vector result,review,must,yes,no,original also shows the segmentation layer
+Upload bitmap by click or drag and drop (JPG PNG BMP GIF),upload,must,yes,yes,"online edition inputs per support/file_formats; click, drag and drop, and paste from clipboard; 25 MB limit"
+Automatic detection of image type and settings,vectorize,must,yes,partial,original auto-classifies photo / artwork / logo / scan; color count only (cluster-and-merge); no image-type detection yet
+Automatic vectorization right after upload,vectorize,must,yes,yes,"in a Web Worker, WASM engine"
+Side-by-side or flip view: bitmap vs vector result,review,must,yes,partial,"original also shows the segmentation layer; side by side on desktop, tabs on mobile; no flip, no segmentation layer"
 Zoom and pan on the result,review,must,yes,no,inferred: needed to inspect edges
 Hand-pick settings: image type,settings,must,yes,no,photo / artwork with blended edges / artwork sharp edges / scan (inferred names)
 Hand-pick settings: detail level low medium high,settings,must,yes,no,medium recommended default
 Hand-pick settings: unlimited colors vs custom palette (2-12 colors),settings,must,yes,no,proposed palettes offered
 Re-vectorize after changing settings,settings,must,yes,no,
-Download SVG,export,must,yes,no,
+Download SVG,export,must,yes,yes,viewBox + original width/height
 Download EPS,export,should,yes,no,
 Download PDF,export,must,yes,no,
 Free vectorize and preview; download gated by payment,billing,could,yes,no,for internal use this gate is likely not needed

@@ -5,3 +5,6 @@ replica/screens/*
 !replica/screens/.gitkeep
 samples/
 .DS_Store
+vectorizador-dist.zip
+replica/clone-screens/*
+!replica/clone-screens/.gitkeep

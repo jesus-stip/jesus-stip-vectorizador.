@@ -1,0 +1,53 @@
+/* Placeholder tokens: neutral on purpose. /replica-design replaces the values, never the names. */
+:root {
+  --color-bg: #f6f6f4;
+  --color-surface: #ffffff;
+  --color-border: #e2e2de;
+  --color-border-input: #8a8a84;
+  --color-text: #1c1c1a;
+  --color-text-muted: #5e5e58;
+  --color-accent: #2f5d50;
+  --color-on-accent: #ffffff;
+  --color-danger: #b3261e;
+  --color-checker-a: #ececea;
+  --color-checker-b: #ffffff;
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 45%, transparent);
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.08);
+
+  --content-max: 1200px;
+  --header-h: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #151514;
+    --color-surface: #1f1f1d;
+    --color-border: #34342f;
+    --color-border-input: #8d8d86;
+    --color-text: #eeeeea;
+    --color-text-muted: #a9a9a2;
+    --color-accent: #7cc4ad;
+    --color-on-accent: #0e1f1a;
+    --color-danger: #ff8a80;
+    --color-checker-a: #2a2a27;
+    --color-checker-b: #1f1f1d;
+  }
+}
