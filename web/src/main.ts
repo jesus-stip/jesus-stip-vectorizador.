@@ -26,14 +26,23 @@ let jobId = 0;
 let urls: string[] = [];
 let current: { name: string; svg: string } | null = null;
 
-function spawn(): Worker {
-  const w = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
-  w.onmessage = (ev: MessageEvent<WorkerMessage>) => onWorker(ev.data);
-  w.onerror = () => fail('El motor se detuvo de forma inesperada. Vuelve a intentarlo.');
-  return w;
+/** If the worker sends nothing at all for this long, it never started. */
+const START_TIMEOUT_MS = 15_000;
+let watchdog = 0;
+
+function spawn(): Worker | null {
+  try {
+    const w = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+    w.onmessage = (ev: MessageEvent<WorkerMessage>) => onWorker(ev.data);
+    w.onerror = (e) => fail(`El motor no pudo arrancar${e.message ? ` (${e.message})` : ''}. Prueba con Chrome, Edge o Firefox actualizados.`);
+    return w;
+  } catch (e) {
+    showError(`Este navegador no puede ejecutar el motor (${e instanceof Error ? e.message : e}). Usa Chrome, Edge o Firefox actualizados.`);
+    return null;
+  }
 }
 
-function restartWorker() { worker.terminate(); worker = spawn(); }
+function restartWorker() { clearTimeout(watchdog); worker?.terminate(); worker = spawn(); }
 
 function show(section: HTMLElement) {
   for (const s of [s01, s02, s03]) s.hidden = s !== section;
@@ -42,12 +51,16 @@ function show(section: HTMLElement) {
 function revokeAll() { urls.forEach(URL.revokeObjectURL); urls = []; }
 function objectUrl(b: Blob) { const u = URL.createObjectURL(b); urls.push(u); return u; }
 
-function fail(message: string) {
-  restartWorker();
+function showError(message: string) {
   show(s01);
   s01Error.textContent = message;
   s01Error.hidden = false;
   fileInput.value = '';
+}
+
+function fail(message: string) {
+  restartWorker();
+  showError(message);
 }
 
 function start(file: File) {
@@ -62,12 +75,16 @@ function start(file: File) {
   stage.textContent = STAGES.decode;
   show(s02);
   $<HTMLButtonElement>('s02-cancel').focus();
+  if (!worker) return fail('Este navegador no puede ejecutar el motor. Usa Chrome, Edge o Firefox actualizados.');
   const req: TraceRequest = { type: 'trace', id: ++jobId, file, detail: 1 as Detail };
   worker.postMessage(req);
+  clearTimeout(watchdog);
+  watchdog = window.setTimeout(() => fail('El motor no respondió. Puede que el servidor no esté entregando los archivos de assets/ (revisa que se hayan subido completos).'), START_TIMEOUT_MS);
 }
 
 function onWorker(m: WorkerMessage) {
   if (m.id !== jobId) return; // a cancelled job finishing late
+  clearTimeout(watchdog);
   if (m.type === 'stage') { stage.textContent = STAGES[m.stage]; return; }
   if (m.type === 'error') return fail(m.message || 'No se pudo vectorizar esta imagen.');
   current!.svg = m.svg;
@@ -127,3 +144,5 @@ $('s05-svg').addEventListener('click', () => {
 $('s03-new').addEventListener('click', () => { show(s01); fileInput.value = ''; fileInput.focus(); });
 $('tab-vec').addEventListener('click', () => selectTab('vec'));
 $('tab-orig').addEventListener('click', () => selectTab('orig'));
+
+(window as unknown as { __vzReady: boolean }).__vzReady = true;

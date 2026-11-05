@@ -11,6 +11,8 @@
 <body>
   <header class="header"><p class="header__name">Vectorizador</p></header>
   <main>
+    <p class="alert" id="boot-error" role="alert" hidden></p>
+    <noscript><p class="alert">Esta app necesita JavaScript activado.</p></noscript>
     <!-- S01 upload -->
     <section id="s01" aria-labelledby="s01-title">
       <label class="drop" id="drop">
@@ -59,6 +61,18 @@
       </div>
     </section>
   </main>
+  <!-- Boot check: if the app script never starts, say why instead of doing nothing. -->
+  <script>
+    setTimeout(function () {
+      if (window.__vzReady) return;
+      var el = document.getElementById('boot-error');
+      var why = location.protocol === 'file:'
+        ? 'Abriste el archivo con doble clic desde tu computadora. Así el navegador bloquea la app: ábrela con la dirección web del subdominio (https://…).'
+        : 'La app no pudo cargar sus archivos. Revisa que la carpeta assets/ esté junto a index.html en el servidor, y prueba en Chrome, Edge o Firefox actualizados.';
+      el.textContent = why;
+      el.hidden = false;
+    }, 3000);
+  </script>
   <script type="module" src="./src/main.ts"></script>
 </body>
 </html>

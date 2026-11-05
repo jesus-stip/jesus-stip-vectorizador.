@@ -4,12 +4,8 @@
 # WebAssembly must be served with its own MIME type for streaming compile
 AddType application/wasm .wasm
 
-# Always use HTTPS
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTPS} !=on
-  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
+# HTTPS: turn on "Force HTTPS Redirect" for the subdomain in cPanel > Domains.
+# (A RewriteRule here loops forever on hosts behind a proxy, so it is not used.)
 
 <IfModule mod_headers.c>
   # hashed build assets never change: cache them for a year

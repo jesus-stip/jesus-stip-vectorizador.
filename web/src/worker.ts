@@ -4,7 +4,7 @@ import { MAX_SOURCE_PIXELS, WORK_PIXELS, type TraceRequest, type WorkerMessage }
 
 const post = (m: WorkerMessage) => (self as unknown as DedicatedWorkerGlobalScope).postMessage(m);
 
-engine().catch(() => { /* reported on first request */ });
+engine().catch(() => { /* reported on the first request */ });
 
 self.onmessage = async (ev: MessageEvent<TraceRequest>) => {
   const { id, file, detail } = ev.data;
@@ -39,6 +39,8 @@ self.onmessage = async (ev: MessageEvent<TraceRequest>) => {
       downscaled: width * height > cap,
     });
   } catch (err) {
-    post({ type: 'error', id, message: err instanceof Error ? err.message : String(err) });
+    const msg = err instanceof Error ? err.message : String(err);
+    post({ type: 'error', id, message: msg.startsWith('no se pudo cargar el motor') || err instanceof WebAssembly.CompileError
+      ? `No se pudo cargar el motor de vectorización: ${msg}` : msg });
   }
 };
