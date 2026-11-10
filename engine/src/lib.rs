@@ -52,7 +52,7 @@ pub unsafe extern "C" fn suggest_colors(ptr: *const u8, w: usize, h: usize) -> u
 #[no_mangle]
 pub unsafe extern "C" fn trace(ptr: *const u8, w: usize, h: usize, colors: u32, detail: u32, max_pixels: u32) -> u32 {
     let px = std::slice::from_raw_parts(ptr, w * h * 4).to_vec();
-    match trace_rgba(Image { w, h, px }, &Settings { colors: colors as usize, detail, max_pixels: max_pixels as usize }) {
+    match trace_rgba(Image { w, h, px }, &Settings::new(colors as usize, detail, max_pixels as usize)) {
         Ok(svg) => { set_result(svg); 0 }
         Err(e) => { set_result(e); 1 }
     }
@@ -63,10 +63,12 @@ pub fn trace_rgba(img: Image, s: &Settings) -> Result<String, String> {
     if img.w == 0 || img.h == 0 || img.px.len() != img.w * img.h * 4 { return Err("imagen vacía o corrupta".into()); }
     let (orig_w, orig_h) = (img.w, img.h);
     let work = prep::prepare(img, s);
-    // speckle is an area in working pixels: scale it with the square of the resample factor
-    let base = match s.detail { 0 => 8, 2 => 2, _ => 4 } as f64;
+    // VTracer drops patches smaller than filter_speckle² working pixels, so filter_speckle is a
+    // side length: scale it linearly. Base sides in original pixels: low 3, medium 2, high 1.
+    // (Scaling it by f² erased whole letters such as an "I" at 2x.)
+    let base = match s.detail { 0 => 3.0, 2 => 1.0, _ => 2.0 };
     let f = work.scale_num as f64 / work.scale_den as f64;
-    let speckle = (base * f * f).round() as usize;
+    let speckle = (base * f).round() as usize;
 
     let cfg = Config {
         filter_speckle: speckle.max(1),

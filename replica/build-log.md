@@ -23,3 +23,20 @@ The spike's fixed 2x upscale is now "up to 2x, never over the cap".
   clusters (on the line between their centers) to the nearer end, or merge clusters by edge adjacency.
 - Small lettering ("GOOD DOG GOOD FRIEND") comes out heavier and blobbier than the original.
 - The spike's median-cut at 2x with 16 colors looked cleaner on outlines than k-means at 1.4x. Worth an A/B.
+
+## Engine v2 (2026-11-05): "the other app is much better"
+
+User feedback after the first artifact: quality well below Vector Magic. Three causes found and fixed:
+
+1. **Speckle filter erased features.** VTracer drops patches under `filter_speckle²` px; we scaled
+   `filter_speckle` by f² instead of f, so at 2x anything under 256 px² vanished (whole letters such as
+   "I", small eyes, pine needles). Now a side length scaled linearly: low 3, medium 2, high 1 px.
+2. **Anti-aliasing fringes as their own color** (grey bands along outlines). Two passes: cluster level
+   (a cluster on the line between two others, 55%+ of its pixels within 3 px of both, is split between
+   them at the 50% crossing) and pixel level (a boundary pixel whose color lies on the line between two
+   labels within 2 px goes to the nearer end).
+3. **Muddy black and grey white.** Colors re-estimated from interior pixels only, then near-black snaps
+   to neutral black and near-white to paper white.
+
+Result on samples 1 and 3: no outline bands, true black, letters and small features back, speed
+unchanged (WASM 2.6-3.0 s at 1.6 MP). 2.6 MP is only slightly crisper, so it stays the "high" level.
